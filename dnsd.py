@@ -1,4 +1,6 @@
 import socket
+import urllib.parse
+from pymongo import MongoClient
 
 ip = "127.0.0.1"
 port = 53
@@ -12,6 +14,11 @@ query = ''
 url = ''
 type = ''
 query_class = ''
+
+username = urllib.parse.quote_plus('@dm1n')
+passwor = urllib.parse.quote_plus('Qw3rt&.12345')
+client = MongoClient('mongodb://%s:%s@10.0.2.4' % (username, passwor))
+db = client['waf']
 
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as socket_udp:
 	socket_udp.bind((ip, port))
