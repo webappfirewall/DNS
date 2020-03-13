@@ -22,8 +22,8 @@ db = client['waf']
 collection = db['sites']
 
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as socket_udp:
-    socket_udp.bind(('192.168.17.147', 53))
-    # socket_udp.bind(('', 53))
+    # socket_udp.bind(('192.168.17.147', 53))
+    socket_udp.bind(('', 53))
     print("DNS Server by waf")
 
     while True:
