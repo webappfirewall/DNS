@@ -22,8 +22,8 @@ db = client['waf']
 collection = db['sites']
 
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as socket_udp:
-    # socket_udp.bind(('192.168.17.147', 53))
-    socket_udp.bind(('', 53))
+    socket_udp.bind(('192.168.17.147', 53))
+    # socket_udp.bind(('', 53))
     print("DNS Server by waf")
 
     while True:
@@ -96,9 +96,12 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as socket_udp:
             response.append(0)
             response.append(1)
             socket_udp.sendto(response, address)
+            # print("Sent response")
+            response = bytearray()
         else:
             socket_udp.sendto(data, ('8.8.8.8', 53))
             data2, address2 = socket_udp.recvfrom(1024)
             socket_udp.sendto(data2, address)
+            # print("Sending to Google DNS")
         # print(url)
         url = ''
