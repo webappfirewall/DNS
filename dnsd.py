@@ -22,14 +22,14 @@ db = client['waf']
 collection = db['sites']
 
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as socket_udp:
-    socket_udp.bind(('192.168.17.147', 53))
-    # socket_udp.bind(('', 53))
-    print("DNS Server by waf")
+    # socket_udp.bind(('192.168.17.14', 53))
+    socket_udp.bind(('', 53))
+    print(" ***** DNS Server by waf *****")
 
     while True:
         data, address = socket_udp.recvfrom(1024)
         id = data[:2]
-        # print("id: ", id)
+        print("id: ", int(id.hex(), 16))
         flags = data[2:4]
         # print("flags: ", flags)
         quest = data[4:6]
@@ -60,11 +60,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as socket_udp:
                 url += chr(c)
             i += 1
         url = url[:-3]
+        print('URL: ', url)
 
         doc = collection.find_one({"url": url})
 
         if doc is not None:
-            # print(doc['ip'])
             for i in id:
                 response.append(i)
             response.append(129)
@@ -77,7 +77,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as socket_udp:
             response.append(0)
             response.append(0)
             response.append(0)
-            for i in data:
+            for i in query:
                 response.append(i)
             response.append(192)
             response.append(12)
@@ -91,17 +91,16 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as socket_udp:
             response.append(255)
             response.append(0)
             response.append(4)
-            response.append(127)
+            response.append(192)
+            response.append(168)
             response.append(0)
-            response.append(0)
-            response.append(1)
+            response.append(6)
             socket_udp.sendto(response, address)
-            # print("Sent response")
+            print('***** DNS response *****')
             response = bytearray()
         else:
             socket_udp.sendto(data, ('8.8.8.8', 53))
             data2, address2 = socket_udp.recvfrom(1024)
             socket_udp.sendto(data2, address)
-            # print("Sending to Google DNS")
-        # print(url)
+            print('* DNS Google response *')
         url = ''
