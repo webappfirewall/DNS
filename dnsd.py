@@ -56,13 +56,13 @@ def analyzeRqt(s_udp, **param):
         response.append(17)
         response.append(149)
         s_udp.sendto(response, addr)
-        print('***** DNS response *****')
+        # print('***** DNS response *****')
         response = bytearray()
     else:
         s_udp.sendto(data, ('8.8.8.8', 53))
         data2, addr2 = s_udp.recvfrom(1024)
         s_udp.sendto(data2, addr)
-        print('* DNS Google response *')
+        # print('* DNS Google response *')
     url = ''
 
 
