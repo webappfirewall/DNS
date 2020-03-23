@@ -20,7 +20,7 @@ def analyzeRqt(s_udp, **param):
     query = data[12:]
 
     url = extractURL(query)
-    print('URL: ', url)
+    # print('URL: ', url)
 
     doc = collection.find_one({"url": url})
 
@@ -62,7 +62,8 @@ def analyzeRqt(s_udp, **param):
         s_udp.sendto(data, ('8.8.8.8', 53))
         data2, addr2 = s_udp.recvfrom(1024)
         s_udp.sendto(data2, addr)
-        # print('* DNS Google response *')
+        #
+        print('* DNS Google response *')
     url = ''
 
 
