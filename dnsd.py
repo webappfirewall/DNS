@@ -20,7 +20,7 @@ def analyzeRqt(s_udp, **param):
     query = data[12:]
 
     url = extractURL(query)
-    # print('URL: ', url)
+    print('url: ', url)
 
     doc = collection.find_one({"url": url})
 
@@ -56,13 +56,13 @@ def analyzeRqt(s_udp, **param):
         response.append(17)
         response.append(149)
         s_udp.sendto(response, addr)
-        # print('***** DNS response *****')
+        print('***** DNS response *****')
         response = bytearray()
     else:
         s_udp.sendto(data, ('8.8.8.8', 53))
         data2, addr2 = s_udp.recvfrom(1024)
         s_udp.sendto(data2, addr)
-        # print('* DNS Google response *')
+        print('* DNS Google response *')
     url = ''
 
 
@@ -88,7 +88,6 @@ def extractURL(query):
 def initDNS():
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s_udp:
         s_udp.bind(('192.168.17.147', 53))
-        # s_udp.bind(('', 53))
         print(" ***** DNS Server by waf *****")
 
         while True:
