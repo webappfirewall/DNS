@@ -20,6 +20,7 @@ def analyzeRqt(s_udp, **param):
     query = data[12:]
 
     url = extractURL(query)
+    print('URL: ', url)
 
     doc = collection.find_one({"url": url})
 
