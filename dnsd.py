@@ -15,10 +15,8 @@ def analyzeRqt(conn, addr):
         db = client['waf']
         collection = db['sites']
 
-        response = bytearray()
-
-        id = data[:2]
-        query = data[12:]
+        id = data[2:4]
+        query = data[14:]
 
         url = extractURL(query)
         print('URL: ', url)
@@ -26,6 +24,7 @@ def analyzeRqt(conn, addr):
         doc = collection.find_one({"url": url})
 
         if doc is not None:
+            response = bytearray()
             for i in id:
                 response.append(i)
             response.append(129)
