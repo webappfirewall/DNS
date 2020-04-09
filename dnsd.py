@@ -85,7 +85,7 @@ def initDNS():
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s_udp:
         s_udp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s_udp.bind(('192.168.17.147', 53))
-        s_udp.setBlocking(False)
+        s_udp.setBloocking(False)
         print("***** DNS Server *****")
 
         while True:
