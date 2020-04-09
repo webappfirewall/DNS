@@ -4,7 +4,7 @@ import threading
 from pymongo import MongoClient
 
 
-def analyzeRqt(s_udp, **param):
+def analyzeRqt(s_udp, data, addr):
     usr = urllib.parse.quote_plus('@dm1n')
     pwd = urllib.parse.quote_plus('Qw3rt&.12345')
     client = MongoClient('mongodb://%s:%s@192.168.17.146' % (usr, pwd))
@@ -14,8 +14,6 @@ def analyzeRqt(s_udp, **param):
 
     response = bytearray()
 
-    data = param['data']
-    addr = param['addr']
     id = data[:2]
     query = data[12:]
 
@@ -87,15 +85,16 @@ def initDNS():
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s_udp:
         s_udp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s_udp.bind(('192.168.17.147', 53))
-        # print(" ***** DNS Server by waf *****")
+        s_udp.setBlocking(False)
+        print("***** DNS Server *****")
 
         while True:
             data, addr = s_udp.recvfrom(1024)
-            t = threading.Thread(target=analyzeRqt,
-                                 args=(s_udp, ),
-                                 kwargs={'data': data, 'addr': addr})
-            t.start()
-            t.join()
+            if data:
+                t = threading.Thread(target=analyzeRqt,
+                                     args=(s_udp, data, addr))
+                t.start()
+                t.join()
 
 
 if __name__ == '__main__':
