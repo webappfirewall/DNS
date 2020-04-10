@@ -46,7 +46,7 @@ def analyzeRqt(conn, addr):
                 s_tcp2.sendall(data)
                 while True:
                     data2 = s_tcp2.recv(1024)
-                    if not data:
+                    if not data2:
                         break
                 s_tcp2.sendall(data2)
         url = ''
