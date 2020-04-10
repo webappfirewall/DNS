@@ -3,18 +3,20 @@ import urllib.parse
 import threading
 from pymongo import MongoClient
 
+b1 = bytearray(b'\x81\x80\x00\x01\x00\x01\x00\x00\x00\x00')
+b2 = bytearray(
+    b'\xc0\x0c\x00\x01\x00\x01\x00\x00\x00\xff\x00\x04\xc0\xa8\x11\x95')
+
 
 def analyzeRqt(conn, addr):
+    usr = urllib.parse.quote_plus('@dm1n')
+    pwd = urllib.parse.quote_plus('Qw3rt&.12345')
+    client = MongoClient('mongodb://%s:%s@192.168.17.146' % (usr, pwd))
+    db = client['waf']
+    collection = db['sites']
+
     with conn:
         data = conn.recv(1024)
-
-        usr = urllib.parse.quote_plus('@dm1n')
-        pwd = urllib.parse.quote_plus('Qw3rt&.12345')
-        client = MongoClient('mongodb://%s:%s@192.168.17.146' % (usr, pwd))
-        # client = MongoClient('mongodb://localhost:27017')
-        db = client['waf']
-        collection = db['sites']
-
         id = data[2:4]
         query = data[14:]
 
@@ -25,38 +27,19 @@ def analyzeRqt(conn, addr):
 
         if doc is not None:
             response = bytearray()
-            for i in id:
-                response.append(i)
-            response.append(129)
-            response.append(128)
-            response.append(0)
-            response.append(1)
-            response.append(0)
-            response.append(1)
-            response.append(0)
-            response.append(0)
-            response.append(0)
-            response.append(0)
-            for i in query:
-                response.append(i)
-            response.append(192)
-            response.append(12)
-            response.append(0)
-            response.append(1)
-            response.append(0)
-            response.append(1)
-            response.append(0)
-            response.append(0)
-            response.append(0)
-            response.append(255)
-            response.append(0)
-            response.append(4)
-            response.append(192)
-            response.append(168)
-            response.append(17)
-            response.append(149)
+            length = bytearray(b'\x00')
+            length.append(len(b1) + len(b2) + len(query))
+            for byte in length:
+                response.append(byte)
+            for byte in id:
+                response.append(byte)
+            for byte in b1:
+                response.append(byte)
+            for byte in query:
+                response.append(byte)
+            for byte in b2:
+                response.append(byte)
             conn.sendall(response)
-            response = bytearray()
         else:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s_tcp2:
                 s_tcp2.connect(('8.8.8.8', 53))
