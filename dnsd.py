@@ -44,7 +44,10 @@ def analyzeRqt(conn, addr):
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s_tcp2:
                 s_tcp2.connect(('8.8.8.8', 53))
                 s_tcp2.sendall(data)
-                data2 = s_tcp2.recv(1024)
+                while True:
+                    data2 = s_tcp2.recv(1024)
+                    if not data:
+                        break
                 s_tcp2.sendall(data2)
         url = ''
 
