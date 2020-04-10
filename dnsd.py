@@ -45,7 +45,7 @@ def analyzeRqt(conn, addr):
                 s_tcp2.connect(('8.8.8.8', 53))
                 s_tcp2.sendall(data)
                 data2 = s_tcp2.recv(1024)
-                conn.sendall(data2)
+                s_tcp2.sendall(data2)
         url = ''
 
 
