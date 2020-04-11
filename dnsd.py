@@ -42,7 +42,7 @@ def analyzeRqt(conn, addr):
             for byte in b2:
                 response.append(byte)
             for int in ip:
-                response.append(int)
+                response.append(int(int))
 
             conn.sendall(response)
         else:
