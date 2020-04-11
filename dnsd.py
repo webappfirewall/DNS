@@ -4,8 +4,7 @@ import threading
 from pymongo import MongoClient
 
 b1 = bytearray(b'\x81\x80\x00\x01\x00\x01\x00\x00\x00\x00')
-b2 = bytearray(
-    b'\xc0\x0c\x00\x01\x00\x01\x00\x00\x00\xff\x00\x04\xc0\xa8\x11\x95')
+b2 = bytearray(b'\xc0\x0c\x00\x01\x00\x01\x00\x00\x00\xff\x00\x04')
 
 
 def analyzeRqt(conn, addr):
@@ -39,7 +38,8 @@ def analyzeRqt(conn, addr):
                 response.append(byte)
             for byte in b2:
                 response.append(byte)
-            conn.sendall(response)
+            print(doc['ip'])
+            # conn.sendall(response)
         else:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s_tcp2:
                 s_tcp2.connect(('8.8.8.8', 53))
@@ -73,7 +73,6 @@ def extractURL(query):
 
 def initDNS():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s_tcp:
-        s_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s_tcp.bind(('192.168.17.147', 53))
         s_tcp.listen()
 
