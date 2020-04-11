@@ -39,6 +39,7 @@ def analyzeRqt(conn, addr):
             for byte in b2:
                 response.append(byte)
             print(doc['ip'])
+            print(type(doc['ip']))
             # conn.sendall(response)
         else:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s_tcp2:
