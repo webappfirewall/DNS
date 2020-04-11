@@ -27,7 +27,10 @@ def analyzeRqt(conn, addr):
         if doc is not None:
             response = bytearray()
             length = bytearray(b'\x00')
-            length.append(len(b1) + len(b2) + len(query))
+            ip = doc['ip'].split('.')
+
+            length.append(len(b1) + len(b2) + len(query) + 4)
+
             for byte in length:
                 response.append(byte)
             for byte in id:
@@ -38,9 +41,10 @@ def analyzeRqt(conn, addr):
                 response.append(byte)
             for byte in b2:
                 response.append(byte)
-            print(doc['ip'])
-            print(type(doc['ip']))
-            # conn.sendall(response)
+            for int in ip:
+                response.append(int)
+
+            conn.sendall(response)
         else:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s_tcp2:
                 s_tcp2.connect(('8.8.8.8', 53))
