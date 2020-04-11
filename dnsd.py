@@ -27,6 +27,9 @@ def analyzeRqt(conn, addr):
         if doc is not None:
             response = bytearray()
             length = bytearray(b'\x00')
+            print(len(b1))
+            print(len(b2))
+            print(len(query))
             size = len(b1) + len(b2) + len(query) + 4
             print(size)
             length.append(size)
