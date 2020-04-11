@@ -85,6 +85,7 @@ def initDNS():
             conn, addr = s_tcp.accept()
             t = threading.Thread(target=analyzeRqt, args=(conn, addr))
             t.start()
+            t.join()
 
 
 if __name__ == '__main__':
