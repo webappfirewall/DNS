@@ -27,9 +27,9 @@ def analyzeRqt(conn, addr):
         if doc is not None:
             response = bytearray()
             length = bytearray(b'\x00')
-            ip = doc['ip'].split('.')
-
             length.append(len(b1) + len(b2) + len(query) + 4)
+
+            ip = doc['ip'].split('.')
 
             for byte in length:
                 response.append(byte)
