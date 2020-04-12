@@ -7,52 +7,44 @@ b1 = bytearray(b'\x81\x80\x00\x01\x00\x01\x00\x00\x00\x00')
 b2 = bytearray(b'\xc0\x0c\x00\x01\x00\x01\x00\x00\x00\xff\x00\x04')
 
 
-def analyzeRqt(conn, addr):
+def analyzeRqt(s_udp, data, addr):
     usr = urllib.parse.quote_plus('@dm1n')
     pwd = urllib.parse.quote_plus('Qw3rt&.12345')
     client = MongoClient('mongodb://%s:%s@192.168.17.146' % (usr, pwd))
+    # client = MongoClient('mongodb://127.0.0.1')
     db = client['waf']
     collection = db['sites']
 
-    with conn:
-        data = conn.recv(1024)
-        id = data[2:4]
-        query = data[14:]
+    id = data[:2]
+    query = data[12:]
 
-        url = extractURL(query)
-        print('URL: ', url)
+    url = extractURL(query)
+    print('URL: ', url)
 
-        doc = collection.find_one({"url": url})
+    doc = collection.find_one({"url": url})
 
-        if doc is not None:
-            response = bytearray()
-            length = bytearray(b'\x00')
-            size = len(b1) + len(b2) + len(query) + 4
-            length.append(size)
+    if doc is not None:
+        response = bytearray()
+        ip = doc['ip'].split('.')
 
-            ip = doc['ip'].split('.')
+        for byte in id:
+            response.append(byte)
+        for byte in b1:
+            response.append(byte)
+        for byte in query:
+            response.append(byte)
+        for byte in b2:
+            response.append(byte)
+        for byte in ip:
+            response.append(int(byte))
 
-            for byte in length:
-                response.append(byte)
-            for byte in id:
-                response.append(byte)
-            for byte in b1:
-                response.append(byte)
-            for byte in query:
-                response.append(byte)
-            for byte in b2:
-                response.append(byte)
-            for byte in ip:
-                response.append(int(byte))
-
-            conn.sendall(response)
-        else:
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s_tcp2:
-                s_tcp2.connect(('8.8.8.8', 53))
-                s_tcp2.sendall(data)
-                data2 = s_tcp2.recv(1024)
-                s_tcp2.sendall(data2)
-        url = ''
+        s_udp.sendto(response, addr)
+    else:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s_udp2:
+            s_udp2.sendto(data, ('8.8.8.8', 53))
+            data2, addr2 = s_udp2.recvfrom(1024)
+            s_udp.sendto(data2, addr)
+    url = ''
 
 
 def extractURL(query):
@@ -75,14 +67,14 @@ def extractURL(query):
 
 
 def initDNS():
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s_tcp:
-        s_tcp.bind(('192.168.17.147', 53))
-        s_tcp.listen()
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s_udp:
+        s_udp.bind(('192.168.17.147', 53))
+        # s_udp.bind(('localhost', 53))
 
         print("***** DNS Server *****")
         while True:
-            conn, addr = s_tcp.accept()
-            t = threading.Thread(target=analyzeRqt, args=(conn, addr))
+            data, addr = s_udp.recvfrom(1024)
+            t = threading.Thread(target=analyzeRqt, args=(s_udp, data, addr))
             t.start()
             t.join()
 
