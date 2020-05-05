@@ -69,14 +69,12 @@ def extractURL(query):
 def initDNS():
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s_udp:
         s_udp.bind(('192.168.17.147', 53))
-        # s_udp.bind(('localhost', 53))
 
         print("***** DNS Server *****")
         while True:
             data, addr = s_udp.recvfrom(1024)
             t = threading.Thread(target=analyzeRqt, args=(s_udp, data, addr))
             t.start()
-            t.join()
 
 
 if __name__ == '__main__':
