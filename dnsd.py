@@ -11,13 +11,10 @@ def analyzeRqt(s_udp, data, addr):
     usr = urllib.parse.quote_plus('@dm1n')
     pwd = urllib.parse.quote_plus('Qw3rt&.12345')
     client = MongoClient('mongodb://%s:%s@192.168.17.146' % (usr, pwd))
-    # client = MongoClient('mongodb://127.0.0.1')
     db = client['waf']
     collection = db['sites']
-
     id = data[:2]
     query = data[12:]
-
     url = extractURL(query)
     print('URL: ', url)
 
@@ -69,12 +66,14 @@ def extractURL(query):
 def initDNS():
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s_udp:
         s_udp.bind(('192.168.17.147', 53))
+        s_udp.setblocking(0)
 
         print("***** DNS Server *****")
         while True:
             data, addr = s_udp.recvfrom(1024)
-            t = threading.Thread(target=analyzeRqt, args=(s_udp, data, addr))
-            t.start()
+            if data:
+                t = threading.Thread(target=analyzeRqt, args=(s_udp, data, addr))
+                t.start()
 
 
 if __name__ == '__main__':
